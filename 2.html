@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Marine Service Panel</title>
+
+<style>
+
+/* ===== GLOBAL ===== */
+body{
+margin:0;
+font-family:Segoe UI, Tahoma;
+background:#071220;
+color:#fff;
+overflow:hidden;
+}
+
+/* 🔥 RADAR GRID BACKGROUND */
+body::before{
+content:"";
+position:fixed;
+width:100%;
+height:100%;
+background:
+linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px),
+linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px);
+background-size:40px 40px;
+pointer-events:none;
+}
+
+/* ===== LAYOUT ===== */
+.wrapper{
+display:flex;
+height:100vh;
+}
+
+.sidebar{
+width:260px;
+background:rgba(10,25,45,0.95);
+padding:18px;
+box-shadow:3px 0 20px rgba(0,0,0,0.6);
+}
+
+.mainBtn{
+width:100%;
+padding:15px;
+margin-bottom:12px;
+background:#0f3c66;
+border:none;
+color:#fff;
+border-radius:10px;
+cursor:pointer;
+text-align:left;
+transition:0.25s;
+}
+
+.mainBtn:hover{ background:#155a94; }
+
+.mainBtn.active{
+background:#ffc107;
+color:#000;
+font-weight:bold;
+}
+
+.content{
+flex:1;
+padding:30px;
+}
+
+.title{
+text-align:center;
+color:#7ec8ff;
+margin-bottom:25px;
+}
+
+.card{
+background:rgba(15,30,50,0.85);
+border-radius:14px;
+padding:20px;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+min-height:400px;
+}
+
+/* ===== COMMAND SCREEN TEXT ===== */
+.homePanel{
+text-align:center;
+padding-top:80px;
+position:relative;
+}
+
+/* 🔥 GLOW TEXT + PULSE */
+.glowText{
+font-size:64px;
+font-weight:bold;
+color:#ffc107;
+letter-spacing:3px;
+animation:pulseGlow 2.5s infinite;
+text-shadow:
+0 0 10px #ffc107,
+0 0 25px #ffc107,
+0 0 50px #ff8800,
+0 0 80px #ff5500;
+}
+
+/* 🔥 PULSE ANIMATION */
+@keyframes pulseGlow{
+0%{ text-shadow:0 0 10px #ffc107,0 0 20px #ff8800;}
+50%{ text-shadow:0 0 30px #ffc107,0 0 70px #ff5500;}
+100%{ text-shadow:0 0 10px #ffc107,0 0 20px #ff8800;}
+}
+
+/* 🔥 SCAN LINE EFFECT */
+.homePanel::after{
+content:"";
+position:absolute;
+left:0;
+top:0;
+width:100%;
+height:3px;
+background:rgba(0,255,255,0.5);
+animation:scan 4s linear infinite;
+}
+
+@keyframes scan{
+0%{top:0;}
+100%{top:100%;}
+}
+
+/* ===== ALARM GRID ===== */
+.panelGrid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:16px;
+}
+
+.alarmBtn{
+background:linear-gradient(145deg,#163a5a,#0e2a44);
+border:2px solid #2f4f73;
+padding:20px;
+border-radius:12px;
+cursor:pointer;
+text-align:center;
+font-weight:600;
+}
+
+.alarmBtn.active{
+background:#ffc107;
+color:#000;
+box-shadow:0 0 20px #ffc107;
+}
+
+.result{
+margin-top:20px;
+background:#020b14;
+padding:18px;
+border-radius:12px;
+white-space:pre-line;
+color:#9effb0;
+min-height:140px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<div class="sidebar">
+<button class="mainBtn" onclick="openMenu('home',this)">🏠 หน้าหลัก</button>
+<button class="mainBtn" onclick="openMenu('gen',this)">⚡ เครื่องไฟฟ้าเรือ</button>
+<button class="mainBtn" onclick="openMenu('fan',this)">🌬️ ระบบพัดลมระบายอากาศ</button>
+<button class="mainBtn" onclick="openMenu('heater',this)">🔥 เครื่องอุ่นน้ำระบบเครื่องยนต์</button>
+</div>
+
+<div class="content">
+
+<h2 class="title">⚓ การซ่อมทำระบบต่างๆในเรือ</h2>
+
+<div class="card">
+
+<!-- HOME -->
+<div id="homeMenu" class="menu">
+<div class="homePanel">
+<div class="glowText">
+เราทำให้พร้อมรบ
+</div>
+</div>
+</div>
+
+<!-- GENERATOR -->
+<div id="genMenu" class="menu" style="display:none;">
+<div class="panelGrid">
+<div class="alarmBtn" onclick="toggle('c1',this)">Volt ต่ำไม่จ่ายโหลด</div>
+<div class="alarmBtn" onclick="toggle('c2',this)">Volt สูงไม่จ่ายโหลด</div>
+<div class="alarmBtn" onclick="toggle('c3',this)">Volt ตกตอนจ่ายโหลด</div>
+<div class="alarmBtn" onclick="toggle('c4',this)">Breaker Trip ตอนขนาน</div>
+<div class="alarmBtn" onclick="toggle('c5',this)">Overspeed</div>
+<div class="alarmBtn" onclick="toggle('c6',this)">Volt สวิง</div>
+<div class="alarmBtn" onclick="toggle('c7',this)">ไม่แชร์โหลด</div>
+</div>
+</div>
+
+<!-- FAN -->
+<div id="fanMenu" class="menu" style="display:none;">
+<div class="panelGrid">
+<div class="alarmBtn" onclick="toggle('f1',this)">พัดลมมีเสียงดัง</div>
+<div class="alarmBtn" onclick="toggle('f2',this)">เปิดไม่ติด</div>
+</div>
+</div>
+
+<!-- HEATER -->
+<div id="heaterMenu" class="menu" style="display:none;">
+<div class="panelGrid">
+<div class="alarmBtn" onclick="toggle('h1',this)">น้ำไม่ร้อน</div>
+<div class="alarmBtn" onclick="toggle('h2',this)">ความร้อนไม่ถึงค่าที่กำหนด</div>
+</div>
+</div>
+
+<div id="result" class="result"></div>
+
+</div>
+</div>
+</div>
+
+<script>
+
+let state={c1:false,c2:false,c3:false,c4:false,c5:false,c6:false,c7:false,f1:false,f2:false,h1:false,h2:false};
+
+function openMenu(type,btn){
+document.querySelectorAll(".mainBtn").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+resetAll();
+document.getElementById(type+"Menu").style.display="block";
+}
+
+function resetAll(){
+for(let k in state){state[k]=false;}
+document.querySelectorAll(".alarmBtn").forEach(b=>b.classList.remove("active"));
+result.innerText="";
+}
+
+function toggle(id,el){
+state[id]=!state[id];
+el.classList.toggle("active");
+analyze();
+}
+
+function analyze(){
+let r="=== วิเคราะห์สาเหตุและแนวทางแก้ไขเบื้องต้น ===\n\n";
+
+if(state.c1) r+=`แรงดันไฟฟ้าต่ำ\n✔ ตรวจ AVR\n\n`;
+if(state.c2) r+=`แรงดันไฟฟ้าสูง\n✔ ตรวจ AVR\n\n`;
+if(state.c3) r+=`แรงดันตก\n✔ ตรวจ Diode\n\n`;
+if(state.c4) r+=`Breaker Trip\n✔ Reverse Power\n\n`;
+if(state.c5) r+=`Overspeed\n✔ Governor\n\n`;
+if(state.c6) r+=`Volt สวิง\n✔ AVR\n\n`;
+if(state.c7) r+=`ไม่แชร์โหลด\n✔ ปรับรอบ\n\n`;
+
+if(state.f1) r+=`พัดลมมีเสียงดัง\n✔ Bearing\n\n`;
+if(state.f2) r+=`เปิดไม่ติด\n✔ Overload\n\n`;
+
+if(state.h1) r+=`น้ำไม่ร้อน\n✔ Heater เสีย\n\n`;
+if(state.h2) r+=`ความร้อนไม่ถึง\n✔ ตั้งค่า Heater\n\n`;
+
+result.innerText=r;
+}
+
+</script>
+
+</body>
+</html>
